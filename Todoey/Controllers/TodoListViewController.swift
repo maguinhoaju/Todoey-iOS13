@@ -6,39 +6,20 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray = [Item()]
-    let dataFieldPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    var itemArray = [Item]()
+    //obtem o contexto através da UIApplication (esta aplicação) - shared (objetos singleton compartilhados - aplicação corrente na forma de objeto)
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     //var defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(dataFieldPath!)
-        
-//        itemArray.removeAll()
-//        let newItem = Item()
-//        newItem.title = "Item 1"
-//        itemArray.append(newItem)
-//
-//        let newItem2 = Item()
-//        newItem2.title = "Item 2"
-//        itemArray.append(newItem2)
-//
-//        let newItem3 = Item()
-//        newItem3.title = "Item 3"
-//        itemArray.append(newItem3)
-
-        //Recuperando informações utilizando NSCoder
-        loadItems()
-        //recuperando informações utilizando UserDefaults
-//        if let items = defaults.array(forKey: Consts.todoListArray) as? [Item] {
-//            itemArray = items
-//        }
-        
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
     }
 
     //MARK: - TableView DataSource Methods
@@ -51,7 +32,6 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: Consts.todoItemCellId, for: indexPath)
-        
         //atribuindo valores à cell
         let item = itemArray[indexPath.row]
         cell.textLabel?.text = item.title
@@ -67,7 +47,6 @@ class TodoListViewController: UITableViewController {
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
 
         saveItems()
-        //tableView.reloadData()
 
         //retira a seleção da linha quando clicada
         tableView.deselectRow(at: indexPath, animated: true)
@@ -76,28 +55,14 @@ class TodoListViewController: UITableViewController {
 
     //MARK: - Model Manipulation Methods
     
-    fileprivate func saveItems() {
-        //Persistindo utilizando NSCoder
-        let encoder = PropertyListEncoder()
+    func saveItems() {
         do {
-            let data = try encoder.encode(self.itemArray)
-            try data.write(to: self.dataFieldPath!)
+            try context.save()
         } catch {
-            print("Error encoding item array - \(error)")
+            print("Error saving context - \(error)")
         }
         //refresh na tableView
         self.tableView.reloadData()
-    }
-    
-    fileprivate func loadItems() {
-        if let data = try? Data(contentsOf: dataFieldPath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decoding item array - \(error)")
-            }
-        }
     }
     
     //MARK: - Add New Items
@@ -108,15 +73,11 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "New Todoey Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //o que acontecerá quando o usuário clicar no botão Add Item on UIAlert
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
-            //Persistindo utilizando NSCoder
             self.saveItems()
-            //persistindo utilizando defaults
-            //self.defaults.set(self.itemArray, forKey: Consts.todoListArray)
-            //refresh na tableView
-            //self.tableView.reloadData()
         }
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
