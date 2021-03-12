@@ -8,5 +8,6 @@
 import Foundation
 
 struct Consts {
-    static let toDoItemCellId = "ToDoItemCell"
+    static let todoItemCellId = "ToDoItemCell"
+    static let todoListArray = "TodoListArray"
 }

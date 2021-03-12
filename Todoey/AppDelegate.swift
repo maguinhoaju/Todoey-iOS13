@@ -14,7 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        //essa linha irá imprimir onde a informação está sendo persistida quando utilizamos UserDefaults
+        // exemplo:
+        //Users/maguinho/Library/Developer/CoreSimulator/Devices/A265C848-96EE-45B5-A0EA-F22CD983F31C/data/Containers/Data/Application/512CD767-42BA-4957-AF68-6A95C1BA15E0/Documents
+        //Dica: caso a pasta Library não esteja aparecendo, abra o Finder, "Go" (na barra de menu superior), Alt (option). A pasta Library irá aparecer na lista.
+        //print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! as String)
         return true
     }
 
