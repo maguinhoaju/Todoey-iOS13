@@ -10,4 +10,6 @@ import Foundation
 struct Consts {
     static let todoItemCellId = "ToDoItemCell"
     static let todoListArray = "TodoListArray"
+    static let goToItems = "GoToItems"
+    static let categoryCellId = "CategoryCell"
 }
